@@ -1,0 +1,19 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions: 
+      python: 3.7
+      docker: 18
+  pre_build:
+    commands:
+      - pip install -r app/requirements.txt
+      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+      - flake8 app/*.py
+  build:
+    commands:
+      - echo The Docker Image is now building
+      - docker build -t ${REPOSITORY_URI}:latest .
+  post_build:
+    commands:
+      - docker push ${REPOSITORY_URI}:latest
